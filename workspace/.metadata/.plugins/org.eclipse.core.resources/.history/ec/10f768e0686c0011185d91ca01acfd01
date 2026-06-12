@@ -1,0 +1,33 @@
+package service;
+
+import java.io.Reader;
+
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
+public class FactoryService {
+	private static SqlSessionFactory factory;
+	
+	static {
+		String Path = "config/config.xml";		
+		try {
+			Reader rs = Resources.getResourceAsReader(Path);
+			factory = new SqlSessionFactoryBuilder().build(rs);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}	
+	
+	public static SqlSessionFactory getFactory() {
+		return factory;
+	}
+	
+		
+		
+		
+		
+		
+		
+	}
+}

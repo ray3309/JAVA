@@ -1,0 +1,91 @@
+package front;
+
+import java.util.List;
+import java.util.Scanner;
+
+import service.MyMemoService;
+import vo.MyMemoVO;
+//Front는 사용자에게 값을 받아서 서비스에게 <-> Dao <-> SqlSession <-> MyBatis <-> DB
+public class MyMemoMain {
+	
+
+private static void addMemo(MyMemoService service, Scanner sc) {
+	MyMemoVO v = new MyMemoVO();
+	System.out.print("Memo 입력 :");
+	v.setMemo(sc.nextLine());
+	System.out.print("Writer 입력 :");
+	v.setWriter(sc.nextLine());
+	//입력 받은 v의 주소를 서비스에게 전달 -> dao -> mybatis -> db 입력처리됨 
+	service.addMemo(v); // *****
+}	
+private static void upMemo(MyMemoService service, Scanner sc) {
+	System.out.print("번호 입력 :");
+	int num = Integer.parseInt(sc.nextLine());
+	MyMemoVO v = new MyMemoVO();
+	v.setNum(num);//where num=#{num}
+	System.out.print("Memo 입력 :");
+	v.setMemo(sc.nextLine());
+	System.out.print("Writer 입력 :");
+	v.setWriter(sc.nextLine());
+	//입력 받은 v의 주소를 서비스에게 전달 -> dao -> mybatis -> db 수정처리됨 
+	service.updateMemo(v);; // *****
+}
+private static void listMemo(MyMemoService service) {
+	//서비스의 public List<MyMemoVO>  listMemo() 사용해서 값을 받아서 출력
+	List<MyMemoVO> list = service.listMemo();
+	for (MyMemoVO e : list) {
+		System.out.println("num"+e.getNum()+":"+e.getMemo()+":"+e.getWriter());
+		System.out.println("------------------------------------");
+	}
+	
+}
+
+private static void datailMemo(MyMemoService service, Scanner sc) {
+	System.out.print("번호 입력 :");
+	int num = Integer.parseInt(sc.nextLine());
+	MyMemoVO v = service.detailMemo(num);
+	System.out.println("num"+v.getNum()+":"+v.getMemo()+":"+v.getWriter());
+	System.out.println("------------------------------------");
+	
+}
+private static void delMemo(MyMemoService service, Scanner sc) {
+	System.out.print("번호 입력 :");
+	int num = Integer.parseInt(sc.nextLine());
+	service.deleteMemo(num);
+}
+public static void main(String[] args) {
+	Scanner sc = new Scanner(System.in);
+	MyMemoService service = new MyMemoService();
+	//UI
+	ext:while(true) {
+		System.out.print("1.입력,2.리스트,3.상세보기,4.수정,5.삭제,6.종료:");
+		int menu = Integer.parseInt(sc.nextLine());
+		switch (menu) {
+		case 1:
+			addMemo(service,sc);
+			break;
+		case 2:
+			listMemo(service);
+			break;
+		case 3:
+			datailMemo(service,sc);
+			break;	
+		case 4:
+			upMemo(service, sc);
+			break;	
+		case 5:
+			delMemo(service, sc);
+			break;	
+		case 6:
+			System.out.println("종료");
+			break ext;			
+		default:
+			break;
+		}
+	}
+}
+
+
+
+
+}

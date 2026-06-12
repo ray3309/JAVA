@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mydata">
+	<select id="list" resultType="vo.MyDataVO"> 
+		select num, name, email, mdate from mydata order by 1 desc
+	</select>
+	
+	<!--  외부에서 데이터를 전달받아 처리 할때 parameterType으로 처리 -->
+	<insert id="addData" parameterType="vo.MyDataVO">
+		insert into mydata values(mydata_seq.nextVal, #{name}, #{email}, #{ssn}, #{age}, sysdate)
+	</insert>
+</mapper>

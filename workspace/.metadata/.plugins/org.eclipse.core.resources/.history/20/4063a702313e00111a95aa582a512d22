@@ -1,0 +1,65 @@
+package exam;
+
+public class Bank {
+
+	// Variable Section
+	private String AccountNo; 		// 게좌번호
+	
+	private long Deposit_Money;		// 입금 금액 
+	private long Withdraw_Money; 	// 출금 금액
+	private long Total_Money;		// 계좌(총) 잔액
+	
+	private String Withdraw_date; 	// 출금 날짜
+	private String Deposit_date; 	// 입금 날짜	
+	private float  Rate;		 	// 이율(%)
+	
+	private int    Password;		// 계좌비밀번호
+	private String Name;			// 예금주(이름)
+	
+	
+	// Method Section
+	
+	// 계좌 개설 
+	public String OpenAccount(String sName, int nPassword)
+	{
+		System.out.println("계좌계설");
+		return "";
+	}
+	
+	// 계좌 폐쇄
+	public boolean CloseAccount(String sAccountNo, String sName, int nPassword)
+	{
+		System.out.println("계좌폐쇄");
+		return true;
+	}
+	
+	// 입금
+	public long Deposit(String sAccountNo, long lDeposit_Money, String sDeposit_Date)
+	{
+		System.out.println("계좌 입금");
+		long Total_Money = 0L;	
+		
+		
+		return Total_Money;
+	}
+	
+	// 출금
+	public long Withdraw(String sAccountNo, int nPassword, long lWithdraw_Money, String sWithdraw_Date)
+	{
+		System.out.println("계좌 출금");
+		
+		long Total_Money = 0L;
+		
+		return Total_Money;
+	}
+	
+	// 잔액조회
+	public long CheckBalance(String sAccountNo, int nPassword)
+	{
+		System.out.println("잔액 조회");
+		
+		long Total_Money = 0L;
+		
+		return Total_Money;
+	}	
+}

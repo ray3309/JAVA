@@ -1,0 +1,28 @@
+package ex2;
+
+import java.awt.Color;
+
+import javax.swing.JFrame;
+
+public class Ex1_GuiDemo extends JFrame {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	// Default Construct
+	public Ex1_GuiDemo() {
+		// TODO Auto-generated constructor stub
+		setTitle(" 호출 됨");
+		setBackground(Color.yellow);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(10,20,300,300);
+		setVisible(true);
+	}
+	
+	public static void main(String[] args) {
+		@SuppressWarnings("unused")
+		Ex1_GuiDemo ex = new Ex1_GuiDemo();
+	}
+}

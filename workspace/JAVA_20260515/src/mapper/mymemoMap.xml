@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mymemo">
+
+<insert id="add" parameterType="vo.MyMemoVO">
+ insert into mymemo values(mymemo_seq.nextVal,#{memo},#{writer},sysdate)
+</insert>
+<select id="list" resultType="vo.MyMemoVO">
+	select num,memo,writer,mdate from mymemo order by 1 desc
+</select>
+
+<select id="detail" resultType="vo.MyMemoVO" parameterType="int">
+	select num,memo,writer,mdate from mymemo where num=#{num}
+</select>
+<update id="up" parameterType="vo.MyMemoVO">
+	update mymemo set memo=#{memo},writer=#{writer} where num=#{num}
+</update>
+<delete id="del" parameterType="int">
+	delete from mymemo where num=#{num}
+</delete>
+
+</mapper>  

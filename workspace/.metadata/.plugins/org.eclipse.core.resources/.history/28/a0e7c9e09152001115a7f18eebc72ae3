@@ -1,0 +1,209 @@
+package org.semiproject;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvException;
+
+public class TestURI_CSV {
+
+	String fileURL = "https://github.com/ray3309/semiproject/raw/refs/heads/main/Book.csv";
+	static String savePath = "src/org/semiproject/Book.csv";
+
+	String url = "jdbc:oracle:thin:@192.168.0.3:1521:xe";
+	String user = "dteam";
+	String dbpwd = "dteam1234";
+	
+	static {
+		try{
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			System.out.println("드라이버 로드 성공");
+		}catch(ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+		
+	public void downLoad() {
+		try (InputStream in = new URI(fileURL).toURL().openStream()) {
+	        // 인코딩 변환 과정 없이 바이트 단위로 그대로 복사 (가장 확실함)
+	        Files.copy(in, Paths.get(savePath), StandardCopyOption.REPLACE_EXISTING);
+	        System.out.println("다운로드 완료: " + savePath);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }		
+	}
+	
+	public static ArrayList<BookVO> getCsv() {
+	    ArrayList<BookVO> list = new ArrayList<BookVO>();   		
+	    
+	    CSVParser parser = new CSVParserBuilder().withSeparator(',').withQuoteChar('"').build();
+	    
+	    try(CSVReader reader = new CSVReaderBuilder(
+	            new FileReader(savePath, Charset.forName("EUC-KR"))) // EUC-KR 지정
+	            .withCSVParser(parser)
+	            .build()){
+	    	String[] data;
+	        
+	        reader.readNext(); // 헤더 제거
+	        
+	        while((data = reader.readNext()) != null){
+
+	            BookVO vo = new BookVO();
+           
+	            if(data[0].length() <= 1024)	            	            	
+	            	vo.setTitle(data[0]);
+	            else
+	            	vo.setTitle(data[0].substring(0, 1023));
+	            
+	            if(data[1].length() <= 100 )
+	            	vo.setAuthor(data[1]);
+	            else
+	            	vo.setAuthor(data[1].substring(0, 99));
+	            
+	            vo.setPublisher(data[2]);
+	            
+	            String TempPubDate = data[3].toString().replaceAll("-", "").replaceAll("\\[","").replaceAll("\\]","");
+	            if(TempPubDate.length() == 4) {
+	            	TempPubDate = TempPubDate.concat("0101");
+	            }	            
+	            vo.setPubDate(TempPubDate);
+	            
+	            vo.setIsbn(data[4].toString().replaceAll("['\"’‘\\s]", ""));
+	            vo.setKdc(data[5]);
+	            
+	            if(data[6].isEmpty() == true)
+	            	vo.setDdc(data[6]);
+	            
+	            if(data[6].isEmpty() == true) {
+	            	System.out.println("제목: " + vo.getTitle() + 
+         		           " | 저자: " + vo.getAuthor() +
+         		           " | 출판사: " + data[2] +
+         		           " | 출판일: " + vo.getPubDate()+
+         		           " | ISBN: " + data[4].toString().replaceAll("['\"’‘\\s]", "") + 
+         				   " | KDC: " + data[5]);
+	            }
+	            else{	            	
+		            System.out.println("제목: " + vo.getTitle() + 
+		            				   " | 저자: " + vo.getAuthor() +
+		            		           " | 출판사: " + data[2] +
+		            		           " | 출판일: " + vo.getPubDate()+
+		            		           " | ISBN: " + data[4].toString().replaceAll("['\"’‘\\s]", "") + 
+		            				   " | KDC: " + data[5] + 
+		            				   " | DDC: " + data[6]);	
+	            }
+	            
+	            list.add(vo);
+	        }
+	    } catch (IOException | CsvException e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	    return list;
+	}
+
+	public void addBatch(ArrayList<BookVO> list) {
+	    // 1. SEQUENCE_BOOK_ID.CURRVAL 로 수정하여 시퀀스 꼬임 방지
+		// 1 = Xdc_bookID
+		// 2 = 
+	    String sql = "INSERT INTO BOOK VALUES (SEQUENCE_BOOK_ID.NEXTVAL, TO_CHAR(SEQUENCE_BOOK_ID.CURRVAL) || '_' || ?, "
+	    			+ "?, 'None', ?, ?, TO_DATE(REPLACE(?, '-', ''), 'YYYYMMDD'), ?, ?, 'N', SYSDATE)";
+
+	    try (Connection conn = DriverManager.getConnection(url, user, dbpwd)) {
+	        conn.setAutoCommit(false); 
+
+	        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	            for (BookVO book : list) {
+	                
+	                if (true == book.getKdc().isEmpty()) {
+	                    pstmt.setString(1, book.getDdc());
+	                } else {
+	                    pstmt.setString(1, book.getKdc());
+	                }
+	                
+	                pstmt.setString(2, book.getIsbn());
+	                pstmt.setString(3, book.getTitle());
+	                pstmt.setString(4, book.getAuthor().substring(0, 512));
+	                pstmt.setString(4, book.getPublisher());
+	                
+	                // 2. 날짜 데이터 포맷 예외 방지 안전장치
+	                // 데이터에 하이픈(-)이 들어오는 경우 슬래시(/)로 강제 치환
+//	                String pubDate = book.getPubDate();
+//	                if (pubDate != null) {
+//	                    pubDate = pubDate.replace("-", "");
+//	                    if(pubDate.length() < 5){
+//	                    	String pubDate2 = book.setPubDate(pubDate.concat("-01-01"));
+//	                    	System.out.println(pubDate2);
+//	                    	if (pubDate2 != null) {
+//	    	                    pubDate = pubDate2.replace("-", "");
+//	                    	}
+//	                    }
+//	                    System.out.println(book.getPubDate());
+//	                }
+//	                pstmt.setString(6, pubDate);
+	                pstmt.setString(5,  "1900-01-01");
+	                
+	                if(book.getKdc() == null || book.getKdc().isEmpty()){
+	                	pstmt.setString(6, "0");
+	                }
+	                else{
+	                	pstmt.setString(6, book.getKdc());	                	
+	                }
+	                
+	                if(book.getDdc() == null || book.getDdc().isEmpty()){
+	                	pstmt.setString(7, "0");
+	                }
+	                else{
+	                	pstmt.setString(7, book.getDdc());	                	
+	                }                
+	                pstmt.addBatch();
+	            }
+	            
+	            int[] result = pstmt.executeBatch();
+	            conn.commit(); // 정상 처리 시 커밋
+	            System.out.println(result.length + "건이 배치 처리 되었습니다.");
+	            
+	        } catch (SQLException e) {
+	            // 3. 배치 처리 중 에러 발생 시 명시적 롤백 실행
+	            System.err.println("배치 실행 중 오류 발생, 롤백을 진행합니다.");
+	            try {
+	                conn.rollback();
+	            } catch (SQLException ex) {
+	                ex.printStackTrace();
+	            }
+	            e.printStackTrace();
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
+
+	public static void main(String[] args) {
+		TestURI_CSV ref = new TestURI_CSV();
+		
+		ref.downLoad();
+		
+		ArrayList<BookVO> list = new ArrayList<BookVO>();
+		
+		list = getCsv();
+		
+		///ref.addBatch(list);
+	}
+	
+}

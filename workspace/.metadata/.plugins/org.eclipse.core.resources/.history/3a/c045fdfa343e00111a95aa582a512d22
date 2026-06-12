@@ -1,0 +1,122 @@
+package exam;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Scanner;
+
+public class BankMain {
+	
+	public static String _sName;
+	public static String _sPass;
+	public static String _sAccountNo;
+	public static long   _lMoney;
+	public static long   _lBalanceMoney;
+	public static String _sDate;
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		Scanner sc = new Scanner(System.in);
+		
+		Date _date = new Date();
+		SimpleDateFormat Dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		Bank b = new Bank();
+		
+		int nStatus = 0;
+
+		do
+		{
+			System.out.println("1 = 계좌개설 : ");
+			System.out.println("2 = 계좌폐쇄 : ");
+			System.out.println("3 = 입금 : ");
+			System.out.println("4 = 출금 : ");
+			System.out.println("5 = 잔액조회 : ");
+			System.out.println("6 = 종료 : ");
+			System.out.println("메뉴를 입력 하세요 : ");
+			nStatus = Integer.parseInt(sc.nextLine());
+			
+			switch(nStatus)
+			{
+				case 1:
+					{
+						System.out.println("개설할 예금주 이름 입력 하세요");
+						_sName = sc.nextLine();	// 예금주 이름 입력
+						System.out.println("개설할 계좌의 비밀번호 입력 하세요");
+						_sPass = sc.nextLine();
+						
+						b.OpenAccount(_sName, _sPass); 
+					}
+				break;
+				
+				case 2:
+				{
+					System.out.println("폐쇄할 계좌의 번호 입력 하세요");
+					_sAccountNo = sc.nextLine();	// 계좌번호 
+					System.out.println("페쇄할 계좌의 예금주 이름 입력 하세요");
+					_sName = sc.nextLine();	// 예금주 이름 입력
+					System.out.println("폐쇄할 계좌의 비밀번호 입력 하세요");
+					_sPass = sc.nextLine();
+					
+					b.CloseAccount(_sAccountNo, _sName, _sPass); 
+				}
+				break;
+				
+				case 3:
+				{
+					System.out.println("입금할 계좌의 번호");
+					_sAccountNo = sc.nextLine();	// 계좌번호 
+					
+					System.out.println("계좌 비밀번호");
+					_sPass = sc.nextLine();	// 계좌 비번
+					
+					System.out.println("입금할 금액");
+					_lMoney = Integer.parseInt(sc.nextLine());	// 입금 금액					
+					
+					// 자동으로 날짜를 문자열로 변환 해서 저장					
+					_sDate = Dateformat.format(_date);					
+					_lBalanceMoney = b.Deposit(_sAccountNo, _sPass, _lMoney, _sDate);
+					
+					System.out.println("입금후 잔액은 : " + _lBalanceMoney + "입니다.");
+				}
+				break;
+				
+				case 4:
+				{
+					System.out.println("출금할 계좌의 번호");
+					_sAccountNo = sc.nextLine();	// 계좌번호 
+					System.out.println("출금할 금액");
+					_lMoney = Integer.parseInt(sc.nextLine());	// 출금 금액
+					
+					System.out.println("계좌 비밀번호");
+					_sPass = sc.nextLine();	// 계좌 비번
+					
+					// 자동으로 날짜를 문자열로 변환 해서 저장					
+					_sDate = Dateformat.format(_date);					
+					_lBalanceMoney = b.Withdraw(_sAccountNo, _sPass, _lMoney, _sDate);
+					
+					System.out.println("출금후 잔액은 : " + _lBalanceMoney + "입니다.");
+				}
+				break;
+				
+				case 5:
+				{
+					System.out.println("잔액 조회할 계좌의 번호");
+					_sAccountNo = sc.nextLine();	// 계좌 번호 
+					
+					System.out.println("잔액 조회할 계좌 비밀번호");
+					_sPass = sc.nextLine();			// 계좌 비번
+					
+					_lBalanceMoney = b.CheckBalance(_sAccountNo, _sPass);
+					
+					System.out.println("현재 잔액은 : " + _lBalanceMoney + "입니다.");
+				}
+				break;				
+				
+				default:
+					break;
+			}
+		}while(nStatus!=6);
+	}
+
+}

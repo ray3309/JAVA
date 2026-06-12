@@ -1,0 +1,123 @@
+package exam;
+
+import java.util.Random;
+
+public class Bank {
+
+	// Variable Section
+	private String AccountNo; 		// 게좌번호
+	
+	private long Deposit_Money;		// 입금 금액 
+	private long Withdraw_Money; 	// 출금 금액
+	private long Total_Money = 90000000000L;;		// 계좌(총) 잔액
+	
+	private String Withdraw_date; 	// 출금 날짜
+	private String Deposit_date; 	// 입금 날짜	
+	private float  Rate;		 	// 이율(%)
+	
+	private String Password;		// 계좌비밀번호
+	private String Name;			// 예금주(이름)
+	
+	
+	// Method Section
+	public static String generatePattern()
+	{
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+
+        // Helper to append 'n' random digits
+        appendRandomDigits(sb, random, 3);
+        sb.append("-");
+        appendRandomDigits(sb, random, 7);
+        sb.append("-");
+        appendRandomDigits(sb, random, 2);
+
+        return sb.toString();
+    }
+	
+	private static void appendRandomDigits(StringBuilder sb, Random random, int count) {
+        for (int i = 0; i < count; i++) {
+            sb.append(random.nextInt(10)); // Generates 0-9
+        }
+    }
+	
+	// 계좌 개설 
+	public String OpenAccount(String sName, String sPassword)
+	{
+		System.out.println("계좌계설");
+		
+		Name = sName;
+		Password = sPassword;
+		AccountNo = generatePattern();	// 계좌 123-456789-21
+		System.out.println(AccountNo);		
+		
+		return AccountNo;
+	}
+	
+	// 계좌 폐쇄
+	public boolean CloseAccount(String sAccountNo, String sName, String sPassword)
+	{
+		System.out.println("계좌폐쇄");
+		
+		if(AccountNo.equals(sAccountNo) == true && sName.equals(Name) == true && sPassword.equals(sPassword))
+		{
+			// 맞는 계좌가 있기 때문에 해당 계좌의 번호를 "" 로 초기화
+			// 비번도 0 으로 초기화
+			AccountNo = "";
+			Name = "";
+			Password = "";
+			
+			System.out.println("해당 계좌가 정상적으로 폐쇄 되었습니다.");
+		}
+		else
+		{
+			System.out.println("계좌를 찾을수 없습니다.");
+		}
+			
+		
+		return true;
+	}
+	
+	// 입금
+	public long Deposit(String sAccountNo, String sPassword, long lDeposit_Money, String sDeposit_Date)
+	{
+		System.out.println("계좌 입금");
+		
+		if(AccountNo.equals(sAccountNo) == true && Password.equals(sPassword))
+		{
+			// 입금 가능
+			Deposit_Money = lDeposit_Money;
+			Total_Money += Deposit_Money;
+		}
+		else if(AccountNo.equals(sAccountNo) == false)
+		{
+			// 입금 불가
+			System.out.println("계좌번호가 맞지 않아 입금 불가");
+		}
+		else if(AccountNo.equals(sAccountNo) == true && Password.equals(sPassword) == false)
+		{
+			// 입금 불가
+			System.out.println("계좌의 비밀번호가 맞지 않아 입금 불가");
+		}
+		
+		return Total_Money;
+	}
+	
+	// 출금
+	public long Withdraw(String sAccountNo, String sPassword, long lWithdraw_Money, String sWithdraw_Date)
+	{
+		System.out.println("계좌 출금");
+						
+		Total_Money -= lWithdraw_Money;
+		
+		return Total_Money;
+	}
+	
+	// 잔액조회
+	public long CheckBalance(String sAccountNo, int nPassword)
+	{
+		System.out.println("잔액 조회");
+			
+		return Total_Money;
+	}	
+}

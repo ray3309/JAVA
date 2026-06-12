@@ -1,0 +1,58 @@
+package ex1;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class Ex2_SawonListDemo {
+	public static void main(String[] args) {
+		// 간단한 
+		// 부서 번호를 입력받아, 사원의 이름과 직책, 급여 등을 출력
+		
+		// try~with~resource
+		
+		// 1. Connection
+		
+		// 2. PrepareStatement
+		
+		// 3. 부서번호를 바인딩
+		
+		// 4. ResultSet 커서 반환
+		
+		// 5. while문으로 커서를 반복 하면서 출력
+		String url = "jdbc:oracle:thin:@192.168.0.3:1521/XE";
+		String user = "ray3309";
+		String pwd = "yhs8281";
+		String sql = "SELECT SANAME, SAJOB, SAPAY FROM SAWON WHERE deptNo = ?";
+		
+		try(Connection conn = DriverManager.getConnection(url, user, pwd);
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+					){
+				
+				// ?에 값을 바인딩 처리
+				pstmt.setInt(1, 10);
+				
+				pstmt.executeQuery(sql);
+				
+				// outmode의 파라미터로 부터 ResultSet을 꺼낸다
+				ResultSet rs = pstmt.getResultSet();
+				
+				// cursor 반복하여 출력
+				while(rs.next()) {					
+					String saname = rs.getString("saname");
+					String sjob = rs.getString("sajob");
+					int spay = rs.getInt("sapay");
+					System.out.println(saname+" : " + sjob + " : " + spay);
+				}				
+		}catch (SQLException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}		
+	}
+}

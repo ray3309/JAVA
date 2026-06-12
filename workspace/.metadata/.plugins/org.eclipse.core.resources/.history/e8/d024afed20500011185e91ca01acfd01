@@ -1,0 +1,34 @@
+package config;
+//MyBatis에서 핵심 설정 파일(config.xml -> mapper.xml)을 읽어와서 동작 시키주는 객체를 관리하고 만들어주는 객체 
+//SqlSessionFactory를 제공하는 클래스
+
+import java.io.IOException;
+import java.io.Reader;
+
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
+
+public class FactoryService {
+	//static영역에서 오직 하나만 생성 하는 개념 
+	private static SqlSessionFactory factory;
+	static {
+		String res = "config/config.xml";
+		try {
+			Reader rs = Resources.getResourceAsReader(res);
+			factory = new SqlSessionFactoryBuilder().build(rs);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public static SqlSessionFactory getFactory() { //단축키
+		return factory;
+	}
+
+	public static void main(String[] args) {
+		SqlSession  ss = FactoryService.getFactory().openSession();
+		System.out.println(ss);
+	}
+}

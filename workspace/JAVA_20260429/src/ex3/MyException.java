@@ -1,0 +1,21 @@
+package ex3;
+//사용자 정의 예외 - Exception 상속 (개념만 이해하자)
+public class MyException extends Exception{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	// 예외의 메세지 (msg 필드가 private 이기 때문에 getter()/setter() 메소드를 정의해서 사용하라는 경고)
+	private String msg;	
+	public MyException() {
+		System.out.println("내가 만든 예외의 기본생성자 호출!");
+	}
+	public MyException(String msg) {
+		// 부모의 생성자 중에 메세지를 매개 변수로 받는 생성자를 호출
+		super(msg); //부모의 생성자를 호출해서 메세지를 전달 한 후 초기화한다.
+		this.msg = msg;
+		
+		System.out.println(this.msg);
+	}
+	
+}

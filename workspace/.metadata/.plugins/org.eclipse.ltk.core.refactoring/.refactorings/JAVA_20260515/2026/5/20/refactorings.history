@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move element &apos;mymemoMap.xml&apos; to &apos;JAVA_20260515/src/mapper&apos;&#x0D;&#x0A;- Original project: &apos;JAVA_20260515&apos;&#x0D;&#x0A;- Destination element: &apos;JAVA_20260515/src/mapper&apos;&#x0D;&#x0A;- Original element: &apos;mymemoMap.xml&apos;&#x0D;&#x0A;- Update references to refactored element" description="Move file" destination="/src&lt;mapper" element1="src/vo/mymemoMap.xml" files="1" flags="589830" folders="0" id="org.eclipse.jdt.ui.move" policy="org.eclipse.jdt.ui.moveResources" qualified="false" references="true" stamp="1778810942638" units="0" version="1.0"/>
+</session>
